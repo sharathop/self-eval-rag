@@ -1,0 +1,18 @@
+# Environment variables / secrets
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Generated data - these can be rebuilt from data/doc.pdf via ingest.py
+faiss_index/
+bm25_chunks.pkl
+
+# Local database (contains query history, not needed in repo)
+rag_pipeline_logs.db
+
+# OS files
+.DS_Store
+Thumbs.db
