@@ -16,8 +16,7 @@ vectorstore = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deseri
 reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
 groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-EVAL_API_URL = "http://127.0.0.1:8000/evaluate"
-
+EVAL_API_URL = "https://sha6th-llm-eval-ap.hf.space/evaluate"
 # --- Load chunks for BM25 keyword search (built during ingest.py) ---
 with open("bm25_chunks.pkl", "rb") as f:
     all_chunks = pickle.load(f)
