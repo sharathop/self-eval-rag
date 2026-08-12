@@ -98,7 +98,6 @@ Answer:"""
     )
     return response.choices[0].message.content
 
-
 def evaluate_answer(query, context_text, answer):
     payload = {
         "question": query,
@@ -116,10 +115,30 @@ def evaluate_answer(query, context_text, answer):
 
     result = response.json()
 
-    return {
-        "final_verdict": result["final_verdict"],
-        **result["generation_evaluation"]
-    }
+    generation = result["generation_evaluation"]
+
+    # Compute generation verdict ourselves
+    if generation["nli"]["verdict"] == "Hallucinated":
+        verdict = "Hallucinated"
+
+    elif (
+        generation["nli"]["verdict"] == "Faithful"
+        and generation["bert_score"]["score"] >= 0.70
+    ):
+        verdict = "Faithful"
+
+    elif (
+        generation["cosine"]["verdict"] == "Irrelevant"
+        and len(answer.split()) > 2
+    ):
+        verdict = "Irrelevant"
+
+    else:
+        verdict = "Unverifiable"
+
+    generation["final_verdict"] = verdict
+
+    return generation
 
 def check_context_relevance(query, chunks):
     pairs = [[query, doc.page_content] for doc in chunks]
