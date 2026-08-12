@@ -100,11 +100,26 @@ Answer:"""
 
 
 def evaluate_answer(query, context_text, answer):
-    payload = {"context": context_text, "question": query, "llm_response": answer}
-    response = requests.post(EVAL_API_URL, json=payload, timeout=60)
-    response.raise_for_status()
-    return response.json()
+    payload = {
+        "question": query,
+        "retrieved_contexts": context_text.split("\n\n"),
+        "llm_response": answer
+    }
 
+    response = requests.post(
+        EVAL_API_URL,
+        json=payload,
+        timeout=60
+    )
+
+    response.raise_for_status()
+
+    result = response.json()
+
+    return {
+        "final_verdict": result["final_verdict"],
+        **result["generation_evaluation"]
+    }
 
 def check_context_relevance(query, chunks):
     pairs = [[query, doc.page_content] for doc in chunks]
