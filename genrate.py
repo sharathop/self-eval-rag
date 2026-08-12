@@ -221,6 +221,13 @@ def run_pipeline(query, max_retries=1):
 
     # --- Attempt 1: normal retrieval (k=25 wide, top 10 after rerank) ---
     chunks = retrieve_with_rerank(query, wide_k=25, final_k=10)
+    print("\n========== RETRIEVED CHUNKS ==========")
+
+    for i, chunk in enumerate(chunks):
+        print(f"\n--- CHUNK {i + 1} ---")
+        print(chunk.page_content)
+
+    print("======================================\n")
     context_text = "\n\n".join([doc.page_content for doc in chunks])
 
     relevance = check_context_relevance(query, chunks)
