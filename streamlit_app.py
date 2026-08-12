@@ -21,8 +21,7 @@ from db import init_db, log_query, get_all_logs, get_cached_result
 
 st.set_page_config(page_title="Self-Correcting RAG Pipeline", layout="wide")
 
-EVAL_API_URL = "https://sha6th-llm-eval-ap.hf.space/evaluate"
-
+EVAL_API_URL = "https://sha6th-llm-eval-ap.hf.space/evaluate-llm"
 
 @st.cache_resource
 def load_pipeline_components():
@@ -100,11 +99,11 @@ Answer:"""
 
 def evaluate_answer(query, context_text, answer):
     payload = {
-        "question": query,
-        "retrieved_contexts": context_text.split("\n\n"),
-        "llm_response": answer
-    }
-
+    "question": query,
+    "context": context_text,
+    "llm_response": answer
+}
+ 
     response = requests.post(
         EVAL_API_URL,
         json=payload,
@@ -384,7 +383,14 @@ with tab1:
                 st.json({"Context Relevance": relevance, "Context Recall": recall})
             with col2:
                 st.markdown("**Generation Evaluation**")
-                st.json(full_eval)
+
+                st.json({
+                "Final Verdict": eval_result["final_verdict"],
+                "Cosine": eval_result["cosine"],
+                "BERTScore": eval_result["bert_score"],
+                "NLI": eval_result["nli"],
+                "Fluency": eval_result["fluency"]
+})
 
 with tab2:
     st.subheader("Past Queries")
