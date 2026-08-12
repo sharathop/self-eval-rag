@@ -97,12 +97,24 @@ Answer:"""
     )
     return response.choices[0].message.content
 
-def evaluate_answer(query, context_text, answer):
-    payload = {
-    "question": query,
-    "context": context_text,
-    "llm_response": answer
-}
+def evaluate_answer(query, context, answer):
+
+    response = requests.post(
+        API_URL,
+        json={
+            "question": query,
+            "context": context,
+            "llm_response": answer
+        }
+    )
+
+    response.raise_for_status()
+
+    print("\n========== EVALUATION API RESPONSE ==========")
+    print(response.json())
+    print("=============================================\n")
+
+    return response.json()
  
     response = requests.post(
         EVAL_API_URL,
